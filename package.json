@@ -1,0 +1,30 @@
+{
+  "name": "bun-hono-better-auth",
+  "module": "src/index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "bun run --hot src/app/http/server.ts",
+    "build": "bun build src/app/http/server.ts --outdir dist",
+    "start": "bun run dist/server.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/pg": "^8.20.0",
+    "drizzle-kit": "^0.31.10"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "better-auth": "^1.6.14",
+    "drizzle-orm": "^0.45.2",
+    "elysia": "^1.4.28",
+    "postgres": "^3.4.9",
+    "zod": "^4.4.3"
+  }
+}
