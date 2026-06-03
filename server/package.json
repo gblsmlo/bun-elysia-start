@@ -8,9 +8,10 @@
     "build": "bun build src/app/http/server.ts --outdir dist",
     "start": "bun run dist/server.ts",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
+    "db:migrate": "bun run src/infra/db/migrate.ts",
     "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "db:seed": "bun run src/infra/db/seed.ts"
   },
   "devDependencies": {
     "@types/bun": "latest",
@@ -21,6 +22,7 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@elysiajs/cors": "^1.4.2",
     "better-auth": "^1.6.14",
     "drizzle-orm": "^0.45.2",
     "elysia": "^1.4.28",

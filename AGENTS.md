@@ -4,13 +4,16 @@
 
 ```
 server/
-  models/          # Domain entities and Drizzle schema definitions (PostgreSQL)
-  infra/           # Database connections, external services, Better Auth config
-  app/             # Elysia route handlers, middleware, business logic
+  src/
+    models/        # Domain entities and Drizzle schema definitions (PostgreSQL)
+    infra/         # Database connections, external services, Better Auth config
+    app/           # Elysia route handlers, middleware, business logic
 
 client/
-  features/        # Feature-based folders (each with components, hooks, api, types)
-  shared/          # Shared components, utilities, and COSS UI configuration
+  src/
+    routes/        # TanStack Start file-based routes (__root.tsx, index.tsx, ...)
+    features/      # Feature-based folders (each with components, hooks, api, types)
+    shared/        # Shared components, hooks, and utilities
 ```
 
 **Server** follows a layered architecture: `models` (Drizzle schemas/types) → `infra` (database, auth, external integrations) → `app` (Elysia routes and application logic).
@@ -19,12 +22,19 @@ client/
 
 ## Build, Test, and Development Commands
 
+Run commands inside each workspace (`server/` or `client/`).
+
+Server (`cd server`):
 - `bun install` — Install dependencies
-- `bun dev` — Start development server (Bun + Elysia backend)
-- `bun run build` — Production build
+- `bun dev` — Start the Bun + Elysia backend (port 3000)
 - `bun run db:generate` — Generate Drizzle migrations
 - `bun run db:migrate` — Apply Drizzle migrations
 - `bun run db:push` — Push schema changes directly (dev only)
+
+Client (`cd client`):
+- `bun install` — Install dependencies
+- `bun dev` — Start the TanStack Start dev server (port 3001)
+- `bun run build` — Production build
 
 ## Coding Style & Naming Conventions
 
@@ -32,8 +42,8 @@ client/
 - **Indentation**: 2 spaces
 - **Naming**: camelCase for variables/functions, PascalCase for components/types, kebab-case for file names
 - **Validation**: Use Zod schemas for all input validation and type inference
-- **Imports**: Prefer path aliases over relative paths when available
-- **Components**: COSS UI components as the design system base
+- **Imports**: Prefer path aliases over relative paths (server: `@models`, `@infra`, `@app`, `@lib`; client: `@features`, `@shared`, `@routes`)
+- **UI**: No UI library yet — plain React components in the client
 
 ## Architecture Guidelines
 
