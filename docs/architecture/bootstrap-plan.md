@@ -3,7 +3,7 @@
 ## Objective
 
 Build a starter/fullstack foundation for new projects that will use authentication,
-organizations/accounts/users, and RBAC, while keeping responsibilities separated
+organizations, users, and RBAC, while keeping responsibilities separated
 and avoiding decisions that depend on production topology too early.
 
 The starter should make new project setup low effort, but still leave room to
@@ -18,8 +18,7 @@ grow without rewriting the base.
 - `server/src/infra/db/` contains the database connection, migrations, seed, and
   schema definitions.
 - `server/src/env.ts` already validates runtime environment variables.
-- Current schema has Better Auth tables plus one business table in
-  `server/src/infra/db/schema/account.ts`.
+- Current schema has Better Auth tables plus organization plugin tables.
 
 ### Client
 
@@ -48,16 +47,12 @@ grow without rewriting the base.
 
 ## Key Observations
 
-- There is a confirmed naming collision: `infra/db/schema/auth.ts` exports the
-  Better Auth `account` table while `infra/db/schema/account.ts` exports the
-  business `accounts` table. The file name `account.ts` holding `accounts` makes
-  this worse.
-- All Better Auth tables (`user`, `session`, `account`, `verification`) currently
-  share a single `auth.ts` file, which hides the collision and makes the schema
-  harder to navigate as it grows.
-- `models/` exists but is empty; AGENTS.md still describes it as the home for
-  Drizzle schema, which conflicts with the actual `infra/db/schema/` layout and
-  must be reconciled.
+- The `account` naming collision is resolved by keeping `account` as the Better
+  Auth credential table and using `organization` as the business entity.
+- Better Auth tables and organization plugin tables are split one file per table,
+  which keeps the schema navigable as it grows.
+- `models/` is the domain-facing type layer and `infra/db/schema/` owns Drizzle
+  table definitions.
 - The server already has the right layer split, but the bootstrap code still mixes
   startup concerns with request handling details.
 - The client works, but it is not yet organized as a reusable feature scaffold.
@@ -85,10 +80,8 @@ Tasks:
    - `user.ts`, `session.ts`, `account.ts`, `verification.ts` for Better Auth.
    - Re-export everything from `infra/db/schema/index.ts`.
    - Keep each table's relations and indexes co-located in its own file.
-5. Resolve the `account` naming collision by removing the hand-rolled business
-   `accounts` table in favor of the Better Auth organization plugin (see
-   Workstream 2). The word `account` then unambiguously means the Better Auth
-   credential table.
+5. Keep `account` reserved for the Better Auth credential table and use
+   `organization` as the canonical business entity term.
 6. Establish `models/` as the domain types layer:
    - Export inferred types (`InferSelect` / `InferInsert`) from the schema.
    - Reserve space for repository interfaces if/when that pattern is adopted.
@@ -163,8 +156,7 @@ These decisions should be resolved before implementing broader RBAC behavior:
    - subdomain split
    - or cross-site
 2. Canonical business entity name (RESOLVED):
-   - `organization`, provided by the Better Auth organization plugin; the
-     hand-rolled business `accounts` table is removed.
+   - `organization`, provided by the Better Auth organization plugin.
 3. RBAC scope (RESOLVED for the starter):
    - start with the plugin's default role-based access (`owner` / `member`);
      extend to custom role + permission only per-project.
@@ -177,8 +169,8 @@ These decisions should be resolved before implementing broader RBAC behavior:
 1. Normalize server config and layer boundaries (env single source of truth).
 2. Split the schema into one file per table and stand up the `models/` types
    layer.
-3. Remove the business `accounts` table and enable the Better Auth organization
-   plugin (organization/member/invitation) plus server-side enforcement.
+3. Enable the Better Auth organization plugin (organization/member/invitation)
+   plus server-side enforcement.
 4. Refactor the client into a reusable feature layout.
 5. Tighten setup docs and verification steps.
 6. Only then expand into richer RBAC behavior.
@@ -197,4 +189,3 @@ These decisions should be resolved before implementing broader RBAC behavior:
 - When access control needs more than a simple role model.
 - When the starter begins to accumulate repeated per-project setup steps.
 - When domain naming becomes confusing between auth and business concepts.
-

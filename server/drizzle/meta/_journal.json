@@ -15,6 +15,13 @@
       "when": 1780452275858,
       "tag": "0001_lethal_miek",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1780504763764,
+      "tag": "0002_adopt_organization_plugin",
+      "breakpoints": true
     }
   ]
 }

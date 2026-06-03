@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { organization } from "better-auth/plugins";
 import { env } from "../env";
 import { db } from "@infra/db";
 import * as schema from "@infra/db/schema";
@@ -16,6 +17,11 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
+  plugins: [
+    organization({
+      creatorRole: "owner",
+    }),
+  ],
 });
 
 export type Session = typeof auth.$Infer.Session;
