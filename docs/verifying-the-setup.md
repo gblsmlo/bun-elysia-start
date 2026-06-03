@@ -8,7 +8,7 @@ sections in order.
 ```bash
 cd server
 docker compose up -d        # start Postgres
-bun run db:migrate          # create tables: user, session, account, verification
+bun run db:migrate          # create auth + organization tables
 ```
 
 Quick sanity checks:
@@ -17,9 +17,9 @@ Quick sanity checks:
 # Postgres reachable?
 timeout 2 bash -c "</dev/tcp/localhost/5432" && echo "OK: port 5432 open"
 
-# Auth tables present?
+# Auth and organization tables present?
 bun -e "import postgres from 'postgres'; const sql=postgres(process.env.DATABASE_URL); const r=await sql\`select tablename from pg_tables where schemaname='public' order by tablename\`; console.log(r.map(x=>x.tablename).join(', ')); await sql.end();"
-# expected: account, session, user, verification
+# expected: account, invitation, member, organization, session, user, verification
 ```
 
 ## 1. Automated integration test (primary check)

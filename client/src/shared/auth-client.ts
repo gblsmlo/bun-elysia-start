@@ -1,4 +1,6 @@
 import { createAuthClient } from "better-auth/react";
+import { organizationClient } from "better-auth/client/plugins";
+import { authBaseURL } from "./env";
 
 /**
  * Better Auth browser client.
@@ -9,7 +11,8 @@ import { createAuthClient } from "better-auth/react";
  * CORS (see ../../server).
  */
 export const authClient = createAuthClient({
-  baseURL: import.meta.env.VITE_SERVER_URL ?? "http://localhost:3000",
+  baseURL: authBaseURL,
+  plugins: [organizationClient()],
 });
 
 export const { signIn, signUp, signOut, useSession } = authClient;
