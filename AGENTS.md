@@ -5,8 +5,8 @@
 ```
 server/
   src/
-    models/        # Domain entities and Drizzle schema definitions (PostgreSQL)
-    infra/         # Database connections, external services, Better Auth config
+    models/        # Domain types (inferred from schema) and repository interfaces
+    infra/         # DB connection + Drizzle schema (one file per table), Better Auth
     app/           # Elysia route handlers, middleware, business logic
 
 client/
@@ -16,7 +16,7 @@ client/
     shared/        # Shared components, hooks, and utilities
 ```
 
-**Server** follows a layered architecture: `models` (Drizzle schemas/types) → `infra` (database, auth, external integrations) → `app` (Elysia routes and application logic).
+**Server** follows a layered architecture: `infra/db/schema` (Drizzle tables, coupled to the adapter/migrations) → `models` (domain-facing types inferred via `$inferSelect` / `$inferInsert`, plus future repository interfaces) → `app` (Elysia routes and application logic). App and business code import types from `models/`, never directly from `infra/db/schema`.
 
 **Client** uses feature-folder architecture with TanStack Start. Each feature folder should be self-contained with its own components, hooks, API calls, and types.
 
@@ -49,7 +49,7 @@ Client (`cd client`):
 
 - **Server routes**: Define with Elysia's router in `app/`. Keep handlers thin — delegate to service functions.
 - **Auth**: Use Better Auth for all authentication flows. Auth config lives in `infra/`.
-- **Database**: All schema definitions use Drizzle ORM in `models/`. Never write raw SQL unless absolutely necessary.
+- **Database**: All schema definitions use Drizzle ORM in `infra/db/schema/`, one file per table with relations and indexes co-located and re-exported from `index.ts`. Domain types live in `models/`. Never write raw SQL unless absolutely necessary.
 - **Client features**: Each feature folder contains everything related to that feature. Shared logic goes in `shared/`.
 - **API communication**: Use TanStack Query for server state. Define API functions co-located within feature folders.
 
