@@ -1,12 +1,13 @@
 import { relations } from "drizzle-orm";
 import { pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
-import { account } from "./account";
-import { invitation } from "./invitation";
-import { member } from "./member";
-import { session } from "./session";
+import { accounts } from "./accounts";
+import { invitations } from "./invitations";
+import { members } from "./members";
+import { sessions } from "./sessions";
+import { id } from "../helpers";
 
-export const user = pgTable("user", {
-  id: text("id").primaryKey(),
+export const users = pgTable("users", {
+  id: id(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified").default(false).notNull(),
@@ -18,9 +19,9 @@ export const user = pgTable("user", {
     .notNull(),
 });
 
-export const userRelations = relations(user, ({ many }) => ({
-  sessions: many(session),
-  authAccounts: many(account),
-  memberships: many(member),
-  invitationsSent: many(invitation),
+export const usersRelations = relations(users, ({ many }) => ({
+  sessions: many(sessions),
+  authAccounts: many(accounts),
+  memberships: many(members),
+  invitationsSent: many(invitations),
 }));

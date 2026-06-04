@@ -1,8 +1,8 @@
-import { and, eq } from "drizzle-orm";
 import { auth } from "@infra/auth";
 import { db } from "@infra/db";
-import { member } from "@infra/db/schema";
+import { members } from "@infra/db/schema";
 import type { OrganizationRole } from "@models/member";
+import { and, eq } from "drizzle-orm";
 
 type AuthSession = NonNullable<Awaited<ReturnType<typeof auth.api.getSession>>>;
 
@@ -41,8 +41,7 @@ export async function resolveOrganizationContext(
     };
   }
 
-  const organizationId =
-    options.organizationId ?? session.session.activeOrganizationId;
+  const organizationId = options.organizationId ?? session.session.activeOrganizationId;
 
   if (!organizationId) {
     return {
@@ -57,16 +56,11 @@ export async function resolveOrganizationContext(
 
   const [membership] = await db
     .select({
-      id: member.id,
-      role: member.role,
+      id: members.id,
+      role: members.role,
     })
-    .from(member)
-    .where(
-      and(
-        eq(member.organizationId, organizationId),
-        eq(member.userId, session.user.id),
-      ),
-    )
+    .from(members)
+    .where(and(eq(members.organizationId, organizationId), eq(members.userId, session.user.id)))
     .limit(1);
 
   if (!membership) {
@@ -91,10 +85,7 @@ export async function resolveOrganizationContext(
     };
   }
 
-  if (
-    options.allowedRoles &&
-    !options.allowedRoles.includes(membership.role)
-  ) {
+  if (options.allowedRoles && !options.allowedRoles.includes(membership.role)) {
     return {
       ok: false,
       response: jsonError(

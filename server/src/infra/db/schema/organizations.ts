@@ -1,24 +1,25 @@
 import { relations } from "drizzle-orm";
 import { pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
-import { invitation } from "./invitation";
-import { member } from "./member";
-import { session } from "./session";
+import { invitations } from "./invitations";
+import { members } from "./members";
+import { sessions } from "./sessions";
+import { id } from "../helpers";
 
-export const organization = pgTable(
-  "organization",
+export const organizations = pgTable(
+  "organizations",
   {
-    id: text("id").primaryKey(),
+    id: id(),
     name: text("name").notNull(),
     slug: text("slug").notNull(),
     logo: text("logo"),
     metadata: text("metadata"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
-  (table) => [uniqueIndex("organization_slug_idx").on(table.slug)],
+  (table) => [uniqueIndex("organizations_slug_idx").on(table.slug)],
 );
 
-export const organizationRelations = relations(organization, ({ many }) => ({
-  invitations: many(invitation),
-  members: many(member),
-  activeSessions: many(session),
+export const organizationsRelations = relations(organizations, ({ many }) => ({
+  invitations: many(invitations),
+  members: many(members),
+  activeSessions: many(sessions),
 }));

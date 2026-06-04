@@ -1,4 +1,4 @@
-import type { account } from "@infra/db/schema";
+import type { accounts } from "@infra/db/schema";
 
-export type Account = typeof account.$inferSelect;
-export type NewAccount = typeof account.$inferInsert;
+export type Account = typeof accounts.$inferSelect;
+export type NewAccount = typeof accounts.$inferInsert;

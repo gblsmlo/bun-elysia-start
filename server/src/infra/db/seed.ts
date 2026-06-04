@@ -1,11 +1,10 @@
 import { db } from ".";
-import { member, organization, user } from "./schema";
+import { members, organizations, users } from "./schema";
 
 async function seed() {
   const [createdUser] = await db
-    .insert(user)
+    .insert(users)
     .values({
-      id: crypto.randomUUID(),
       name: "Admin",
       email: "admin@example.com",
       emailVerified: true,
@@ -17,9 +16,8 @@ async function seed() {
   }
 
   const [createdOrganization] = await db
-    .insert(organization)
+    .insert(organizations)
     .values({
-      id: crypto.randomUUID(),
       name: "Admin Organization",
       slug: "admin-organization",
     })
@@ -29,8 +27,7 @@ async function seed() {
     throw new Error("Failed to seed organization");
   }
 
-  await db.insert(member).values({
-    id: crypto.randomUUID(),
+  await db.insert(members).values({
     organizationId: createdOrganization.id,
     userId: createdUser.id,
     role: "owner",

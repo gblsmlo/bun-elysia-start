@@ -1,4 +1,4 @@
-import type { session } from "@infra/db/schema";
+import type { sessions } from "@infra/db/schema";
 
-export type Session = typeof session.$inferSelect;
-export type NewSession = typeof session.$inferInsert;
+export type Session = typeof sessions.$inferSelect;
+export type NewSession = typeof sessions.$inferInsert;

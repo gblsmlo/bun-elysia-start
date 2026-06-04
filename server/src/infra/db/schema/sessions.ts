@@ -1,12 +1,13 @@
 import { relations } from "drizzle-orm";
-import { pgTable, text, timestamp, index } from "drizzle-orm/pg-core";
-import { organization } from "./organization";
-import { user } from "./user";
+import { pgTable, text, timestamp, index, uuid } from "drizzle-orm/pg-core";
+import { organizations } from "./organizations";
+import { users } from "./users";
+import { id } from "../helpers";
 
-export const session = pgTable(
-  "session",
+export const sessions = pgTable(
+  "sessions",
   {
-    id: text("id").primaryKey(),
+    id: id(),
     expiresAt: timestamp("expires_at").notNull(),
     token: text("token").notNull().unique(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -15,24 +16,23 @@ export const session = pgTable(
       .notNull(),
     ipAddress: text("ip_address"),
     userAgent: text("user_agent"),
-    userId: text("user_id")
+    userId: uuid("user_id")
       .notNull()
-      .references(() => user.id, { onDelete: "cascade" }),
-    activeOrganizationId: text("active_organization_id").references(
-      () => organization.id,
-      { onDelete: "set null" },
-    ),
+      .references(() => users.id, { onDelete: "cascade" }),
+    activeOrganizationId: uuid("active_organization_id").references(() => organizations.id, {
+      onDelete: "set null",
+    }),
   },
-  (table) => [index("session_userId_idx").on(table.userId)],
+  (table) => [index("sessions_userId_idx").on(table.userId)],
 );
 
-export const sessionRelations = relations(session, ({ one }) => ({
-  user: one(user, {
-    fields: [session.userId],
-    references: [user.id],
+export const sessionsRelations = relations(sessions, ({ one }) => ({
+  user: one(users, {
+    fields: [sessions.userId],
+    references: [users.id],
   }),
-  activeOrganization: one(organization, {
-    fields: [session.activeOrganizationId],
-    references: [organization.id],
+  activeOrganization: one(organizations, {
+    fields: [sessions.activeOrganizationId],
+    references: [organizations.id],
   }),
 }));

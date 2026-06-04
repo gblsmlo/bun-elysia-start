@@ -1,4 +1,4 @@
-import type { verification } from "@infra/db/schema";
+import type { verifications } from "@infra/db/schema";
 
-export type Verification = typeof verification.$inferSelect;
-export type NewVerification = typeof verification.$inferInsert;
+export type Verification = typeof verifications.$inferSelect;
+export type NewVerification = typeof verifications.$inferInsert;
