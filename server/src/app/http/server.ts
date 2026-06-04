@@ -1,28 +1,57 @@
-import { Elysia, type Context } from "elysia";
+import { getUserById } from "@app/functions/get-user-by-id";
+import { openapi } from "@elysia/openapi";
 import { cors } from "@elysiajs/cors";
-import { env } from "../../env";
-import { auth } from "@infra/auth";
-
-const betterAuthView = (context: Context) => {
-  const BETTER_AUTH_ACCEPT_METHODS = ["POST", "GET"];
-  if (BETTER_AUTH_ACCEPT_METHODS.includes(context.request.method)) {
-    return auth.handler(context.request);
-  }
-  return new Response(null, { status: 405 });
-};
+import { OpenAPI } from "@infra/auth";
+import { env } from "@infra/env";
+import { betterAuthPlugin } from "@infra/http/plugins/better-auth";
+import { Elysia } from "elysia";
+import zod from "zod";
 
 export const app = new Elysia()
-  // Allow the browser client (different origin) to send credentialed requests.
+  .use(
+    openapi({
+      documentation: {
+        components: await OpenAPI.components,
+        paths: await OpenAPI.getPaths(),
+      },
+    }),
+  )
   .use(
     cors({
       origin: env.CLIENT_URL,
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
       credentials: true,
       allowedHeaders: ["Content-Type", "Authorization"],
     }),
   )
-  .all("/api/auth/*", betterAuthView)
+  .use(betterAuthPlugin)
   .get("/", () => ({ message: "Server running" }))
-  .get("/health", () => ({ status: "ok" }))
+  .get(
+    "/user/:id",
+    async ({ params, user }) => {
+      const authenticatedUser = user.name;
+      console.log(authenticatedUser);
+
+      const { id: userId } = params;
+
+      return getUserById(userId);
+    },
+    {
+      auth: true,
+      detail: {
+        summary: "Get user by id",
+        tags: ["User"],
+      },
+      params: zod.object({
+        id: zod.string(),
+      }),
+      response: {
+        200: zod.object({
+          message: zod.string(),
+        }),
+      },
+    },
+  )
   .listen(env.PORT);
 
 console.log(`Server running on http://localhost:${app.server?.port}`);
