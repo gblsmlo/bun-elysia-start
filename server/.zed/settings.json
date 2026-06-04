@@ -1,0 +1,17 @@
+{
+  "lsp": {
+    "biome": {
+      "binary": {
+        "path": "/var/biome-2.2.3/bin/biome",
+        "arguments": ["lsp-proxy"],
+      },
+      "settings": {
+        "require_config_file": true,
+      },
+    },
+  },
+  "code_actions_on_format": {
+    "source.organizeImports.biome": true,
+    "source.fixAll.biome": true,
+  },
+}
