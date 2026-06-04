@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { StrictMode, type ReactNode } from "react";
 import {
   Outlet,
   createRootRoute,
@@ -27,7 +27,9 @@ export const Route = createRootRoute({
 function RootComponent() {
   return (
     <RootDocument>
-      <Outlet />
+      <StrictMode>
+        <Outlet />
+      </StrictMode>
     </RootDocument>
   );
 }
